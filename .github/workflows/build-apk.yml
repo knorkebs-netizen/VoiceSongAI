@@ -15,20 +15,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Java 17 einrichten
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Android SDK einrichten
-        uses: android-actions/setup-android@v3
-
-      - name: Android SDK 35 installieren
-        run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
       - name: Gradle einrichten
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: '8.9'
 
@@ -36,14 +29,20 @@ jobs:
         run: |
           rm -rf build-project
           mkdir build-project
-          unzip -q VoiceSongAI-v0.3.zip -d build-project
+          unzip -q VoiceSongAI-v0.3-1.zip -d build-project
+
+      - name: Android-Projekt finden
+        run: |
+          PROJECT_DIR=$(dirname "$(find build-project -name settings.gradle.kts -o -name settings.gradle | head -1)")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "Projekt gefunden: $PROJECT_DIR"
 
       - name: APK bauen
-        working-directory: build-project/VoiceSongAI
+        working-directory: ${{ env.PROJECT_DIR }}
         run: gradle assembleDebug --stacktrace
 
       - name: APK bereitstellen
         uses: actions/upload-artifact@v4
         with:
           name: VoiceSongAI-debug
-          path: build-project/VoiceSongAI/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
