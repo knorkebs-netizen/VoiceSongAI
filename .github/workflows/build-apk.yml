@@ -30,7 +30,13 @@ jobs:
           rm -rf build-project
           mkdir build-project
           unzip -q VoiceSongAI-v0.3-1.zip -d build-project
-
+      - name: Compose setContent Import korrigieren
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          FILE="app/src/main/java/com/voicesongai/app/MainActivity.kt"
+          if ! grep -q "import androidx.activity.compose.setContent" "$FILE"; then
+            sed -i '/^package /a import androidx.activity.compose.setContent' "$FILE"
+          fi
       - name: Android-Projekt finden
         run: |
           PROJECT_DIR=$(dirname "$(find build-project -name settings.gradle.kts -o -name settings.gradle | head -1)")
