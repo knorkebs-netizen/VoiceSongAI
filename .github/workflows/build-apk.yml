@@ -29,7 +29,7 @@ jobs:
         run: |
           rm -rf build-project
           mkdir build-project
-          unzip -q VoiceSongAI-v0.3-1.zip -d build-project
+          unzip -q VoiceSongAI-v0.3-FIXED.zip -d build-project
       - name: Compose setContent Import korrigieren
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
