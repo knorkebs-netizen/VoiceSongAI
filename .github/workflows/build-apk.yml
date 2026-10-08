@@ -37,6 +37,21 @@ jobs:
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
           echo "Projekt gefunden: $PROJECT_DIR"
 
+      - name: AndroidX aktivieren
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          if grep -q '^android.useAndroidX=' gradle.properties 2>/dev/null; then
+            sed -i 's/^android.useAndroidX=.*/android.useAndroidX=true/' gradle.properties
+          else
+            echo 'android.useAndroidX=true' >> gradle.properties
+          fi
+
+          if grep -q '^android.enableJetifier=' gradle.properties 2>/dev/null; then
+            sed -i 's/^android.enableJetifier=.*/android.enableJetifier=true/' gradle.properties
+          else
+            echo 'android.enableJetifier=true' >> gradle.properties
+          fi
+
       - name: APK bauen
         working-directory: ${{ env.PROJECT_DIR }}
         run: gradle assembleDebug --stacktrace
